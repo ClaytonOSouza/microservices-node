@@ -11,8 +11,12 @@ node {
 		git 'https://github.com/ClaytonOSouza/microservices-node.git'
 	}
 	stage('Build') {
-		sh 'npm install'
-	}
+		    steps {
+                nodejs(nodeJSInstallationName: 'Node 6.x', configId: '<config-file-provider-id>') {
+                    sh 'npm config ls'
+                }
+	     	 }
+    }
 	stage('Test') {
 		sh 'npm test'
 	}
