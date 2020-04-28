@@ -16,7 +16,9 @@ pipeline {
 	    steps{
 	        script {
 		    dockerImage = docker.build registry + ":$BUILD_NUMBER"
-	       }
+	            sh 'docker images'
+                    sh 'ls -lrth'
+              }
 	  }	 
     }
 	stage('Deploy our image') {
