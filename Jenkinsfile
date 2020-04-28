@@ -1,40 +1,37 @@
-node {
-    
-	
-
-    env.AWS_ECR_LOGIN=true
-    def newApp
-    def registry = 'gustavoapolinario/microservices-node-todo-frontend'
-    def registryCredential = 'dockerhub'
-	
-	stage('Git') {
-		git 'https://github.com/ClaytonOSouza/microservices-node.git'
-	}
-	stage('Build') {
-		    steps {
-                nodejs(nodeJSInstallationName: 'Node 6.x', configId: '<config-file-provider-id>') {
-                    sh 'npm config ls'
-                }
-	     	 }
+pipeline {
+    environment {
+	registry = "claytondevops/nodeservices"
+	registryCredential = 'dockerhub'
+	dockerImage = ''
     }
-	stage('Test') {
-		sh 'npm test'
-	}
-	stage('Building image') {
-        docker.withRegistry( 'https://' + registry, registryCredential ) {
-		    def buildName = registry + ":$BUILD_NUMBER"
-			newApp = docker.build buildName
-			newApp.push()
-        }
-	}
-	stage('Registring image') {
-        docker.withRegistry( 'https://' + registry, registryCredential ) {
-    		newApp.push 'latest2'
-        }
-	}
-    stage('Removing image') {
-        sh "docker rmi $registry:$BUILD_NUMBER"
-        sh "docker rmi $registry:latest"
+    agent any
+    stages {
+	stage('Cloning our Git') {
+	    steps {
+	    git 'https://github.com/ClaytonOSouza/microservices-node.git'
+         }
     }
-    
+	stage('Building our image') {
+	    steps{
+	        script {
+		    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+	       }
+	  }	 
+    }
+	stage('Deploy our image') {
+	    steps{
+	        script {
+	            docker.withRegistry( '', registryCredential ) {
+			dockerImage.push()
+	              }	
+	        }	 	
+	  }
+    }	
+	 stage('Cleaning up') {
+	     steps{
+	         sh "docker rmi $registry:$BUILD_NUMBER"
+		}
+	  }
+    }
 }
+
