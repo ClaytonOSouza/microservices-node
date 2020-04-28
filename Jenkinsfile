@@ -9,6 +9,7 @@ pipeline {
 	stage('Cloning our Git') {
 	    steps {
 	    git 'https://github.com/ClaytonOSouza/microservices-node.git'
+            sh 'ls -lrth'
          }
     }
 	stage('Building our image') {
