@@ -1,11 +1,27 @@
-version: '3'
+image: nodeservices
+
 services:
-  web:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    ports:
-      - "80:3000"
-    volumes:
-      - ./app      
+  - docker:dind
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+  IMAGE_TAG: $USER/$PROJECT_NAME:$CI_COMMIT_TAG
+  IMAGE_LATEST: $USER/$PROJECT_NAME:latest
+
+stages:
+  - build
+
+before_script:
+  - echo "$PASSWORD" | docker login -u "$USER" "$CI_REGISTRY" --password-stdin
+
+Build and Push docker image:
+  stage: build
+  script:
+    - docker pull $IMAGE_LATEST || true
+    - docker build --cache-from $IMAGE_LATEST -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker push $IMAGE_TAG
+    - docker push $IMAGE_LATEST
+  only:
+    - tags
 
