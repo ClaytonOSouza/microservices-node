@@ -1,32 +1,22 @@
 pipeline {
     environment {
-        registry = "claytondevops/nodeservices"
-        registryCredential = 'dockerhub'
-        dockerImage = ''
+	registry = "claytondevops/nodeservices"
+	registryCredential = 'dockerhub'
+	dockerImage = ''
     }
-podTemplate(
-    label: 'worker', 
-    containers: [
-        containerTemplate(args: 'cat', name: 'docker', command: '/bin/sh -c', image: 'docker', ttyEnabled: true)
-    ],
-    volumes: [
-      hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
-    ]
-){
-    node('worker') {
-    	echo 'Iniciando Pipeline' 
-	stage('clone'){
-	    git 'https://github.com/ClaytonOSouza/microservices-node.git'
+    agent any
+    stages {
+	stage('Cloning our Git') {
+	    steps {
+	    git 'https://github.com/ClaytonOSouza/nojejenkins.git'
             sh 'ls -lrth'
          }
-    
+    }
 	stage('Building our image') {
 	    steps{
 	        script {
 		    dockerImage = docker.build registry + ":$BUILD_NUMBER"
-	            sh 'docker images'
-                    sh 'ls -lrth'
-              }
+	       }
 	  }	 
     }
 	stage('Deploy our image') {
@@ -44,5 +34,5 @@ podTemplate(
 		}
 	  }
     }
- }
-} 
+}
+
