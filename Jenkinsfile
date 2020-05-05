@@ -8,7 +8,7 @@ pipeline {
     stages {
 	stage('Cloning our Git') {
 	    steps {
-	    git 'https://github.com/ClaytonOSouza/nojejenkins.git'
+	    git 'https://github.com/ClaytonOSouza/microservices-node.git'
             sh 'ls -lrth'
          }
     }
