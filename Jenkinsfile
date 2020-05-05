@@ -14,7 +14,7 @@ podTemplate(
     ]
 ){
     node('worker') {
-    	echo 'Cloning our Git') 
+    	echo 'Iniciando Pipeline' 
 	stage('clone'){
 	    git 'https://github.com/ClaytonOSouza/microservices-node.git'
             sh 'ls -lrth'
