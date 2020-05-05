@@ -14,12 +14,12 @@ podTemplate(
     ]
 ){
     node('worker') {
-    	stage('Cloning our Git') {
-	    steps {
+    	echo 'Cloning our Git') 
+	stage('clone'){
 	    git 'https://github.com/ClaytonOSouza/microservices-node.git'
             sh 'ls -lrth'
          }
-    }
+    
 	stage('Building our image') {
 	    steps{
 	        script {
