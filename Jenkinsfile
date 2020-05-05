@@ -1,12 +1,20 @@
 pipeline {
     environment {
-	registry = "claytondevops/nodeservices"
-	registryCredential = 'dockerhub'
-	dockerImage = ''
+        registry = "claytondevops/nodeservices"
+        registryCredential = 'dockerhub'
+        dockerImage = ''
     }
-    agent any
-    stages {
-	stage('Cloning our Git') {
+podTemplate(
+    label: 'worker', 
+    containers: [
+        containerTemplate(args: 'cat', name: 'docker', command: '/bin/sh -c', image: 'docker', ttyEnabled: true)
+    ],
+    volumes: [
+      hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+    ]
+){
+    node('worker') {
+    	stage('Cloning our Git') {
 	    steps {
 	    git 'https://github.com/ClaytonOSouza/microservices-node.git'
             sh 'ls -lrth'
@@ -36,5 +44,5 @@ pipeline {
 		}
 	  }
     }
-}
-
+ }
+} 
